@@ -6,9 +6,9 @@
 int main(int argc, const char* argv[])
 {
     initVM();
-
     Chunk chunk;
     initChunk(&chunk);
+
     int constant = addConstant(&chunk, 1.2); // add constant to constant-pool
     writeChunk(&chunk, OP_CONSTANT, 123); // write constant op-code
     writeChunk(&chunk, constant, 123);    // write constant value
@@ -25,8 +25,9 @@ int main(int argc, const char* argv[])
     writeChunk(&chunk, OP_NEGATE, 123);
     writeChunk(&chunk, OP_RETURN, 123);   // write return
     disassembleChunk(&chunk, "Test Chunk");
-    freeChunk(&chunk);
 
+    interpret(&chunk);
+    freeChunk(&chunk);
     freeVM();
 
     return 0;

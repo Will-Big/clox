@@ -41,7 +41,7 @@ static InterpretResult run()
         {
             printf("[ ");
             printValue(*slot);
-            printf("] ");
+            printf(" ]");
         }
         printf("\n");
         disassembleInstruction(vm.chunk, (int)(vm.ip - vm.chunk->code));
@@ -51,14 +51,29 @@ static InterpretResult run()
         {
             case OP_CONSTANT:
             {
-                Value value = READ_CONSTANT();
-                printValue(value);
-                printf("\n");
+                Value constant = READ_CONSTANT();
+                push(constant);
                 break;
             }
             case OP_ADD:
             {
-
+                BINARY_OP(+);
+                break;
+            }
+            case OP_SUBTRACT:
+            {
+                BINARY_OP(-);
+                break;
+            }
+            case OP_MULTIPLY:
+            {
+                BINARY_OP(*);
+                break;
+            }
+            case OP_DIVIDE:
+            {
+                BINARY_OP(/);
+                break;
             }
             case OP_NEGATE:
             {
