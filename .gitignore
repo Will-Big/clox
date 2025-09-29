@@ -236,4 +236,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# End of https://www.toptal.com/developers/gitignore/api/c,clion,macos,windows
+/cmake-build-debug/
