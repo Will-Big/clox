@@ -10,4 +10,4 @@
 * **인터프리터 핵심 이해**: 스캐너, 파서, 컴파일러, 가상 머신(VM), 가비지 컬렉터 등 인터프리터의 주요 구성 요소들이 어떻게 작동하고 상호작용하는지 깊이 있게 이해합니다.
 * **학습 과정 기록**: 개발 과정을 블로그에 기록하여 학습 내용을 정리하고 공유합니다.
 
-기록 일지: [velog.io - Will-Big/series/Interpreter]([https://github.com/Will-Big/clox](https://velog.io/@will-big/series/Interpreter))
+기록 일지: [velog.io - Will-Big/series/Interpreter](https://velog.io/@will-big/series/Interpreter)
