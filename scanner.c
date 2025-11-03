@@ -37,6 +37,7 @@ static bool isAtEnd()
     return *scanner.current == '\0';
 }
 
+// move scanner to next token
 static char advance()
 {
     scanner.current++;
