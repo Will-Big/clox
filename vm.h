@@ -2,6 +2,7 @@
 #define CLOX_VM_H
 
 #include "chunk.h"
+#include "table.h"
 
 #define STACK_MAX 256
 
@@ -12,6 +13,7 @@ typedef struct
     Value stack[256];  // 계산에 쓰는 스택
     Value* stackTop;   // 스택의 현재 꼭대기
     Obj* objects;      // 힙에 할당된 모든 객체의 링크드 리스트
+    Table strings;     // 문자열 검색 및 비교를 위한 해쉬 맵
 } VM;
 
 extern VM vm;
