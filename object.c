@@ -12,7 +12,7 @@
 static Obj* allocateObject(size_t size, ObjType type) {
     Obj* object = (Obj*)reallocate(NULL, 0, size);
     object->type = type;
-    // prepend to the VM's object linked list
+    // VM의 객체 링크드 리스트 앞에 추가
     object->next = vm.objects;
     vm.objects = object;
     return object;
@@ -37,7 +37,7 @@ static uint32_t hashString(const char* key, int length) {
     return hash;
 }
 
-// for string literals: copies source chars into new heap memory
+// 문자열 리터럴용: 소스 문자열을 복사하여 힙에 새로 할당
 ObjString* copyString(const char* chars, int length) {
     uint32_t hash = hashString(chars, length);
     ObjString* interned = tableFindString(&vm.strings, chars, length, hash);
@@ -49,7 +49,7 @@ ObjString* copyString(const char* chars, int length) {
     return allocateString(heapChars, length, hash);
 }
 
-// for concatenation results: takes ownership of already-allocated memory
+// 연결 연산 결과용: 이미 할당된 메모리의 소유권을 넘겨받음
 ObjString* takeString(char* chars, int length) {
     uint32_t hash = hashString(chars, length);
     ObjString* interned = tableFindString(&vm.strings, chars, length, hash);

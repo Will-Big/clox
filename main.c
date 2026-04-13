@@ -25,7 +25,7 @@ static void repl()
 
 static char* readFile(const char* path)
 {
-    FILE* file = fopen(path, "rb"); // open file
+    FILE* file = fopen(path, "rb"); // 파일 열기
 
     if (file == NULL)
     {
@@ -33,9 +33,9 @@ static char* readFile(const char* path)
         exit(74);
     }
 
-    fseek(file, 0L, SEEK_END);      // seek end of file
-    size_t fileSize = ftell(file);  // get file size by EOF
-    rewind(file);                   // rewind to start of file
+    fseek(file, 0L, SEEK_END);      // 파일 끝으로 이동
+    size_t fileSize = ftell(file);  // 현재 위치(EOF)로 파일 크기 계산
+    rewind(file);                   // 파일 시작으로 되돌리기
 
     char* buffer = (char*) malloc(fileSize + 1);
     if (buffer == NULL)

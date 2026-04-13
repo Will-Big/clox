@@ -18,18 +18,27 @@ typedef struct
 
 extern VM vm;
 
+// 인터프리터 실행 결과
 typedef enum
 {
-    INTERPRET_OK,
-    INTERPRET_COMPILE_ERROR,
-    INTERPRET_RUNTIME_ERROR,
+    INTERPRET_OK,              // 정상 실행
+    INTERPRET_COMPILE_ERROR,   // 컴파일 에러
+    INTERPRET_RUNTIME_ERROR,   // 런타임 에러
 } InterpretResult;
 
+// VM 초기화 (스택 리셋, 객체 리스트 초기화, 문자열 테이블 초기화)
 void initVM();
+
+// VM 종료 (문자열 테이블 해제, 모든 힙 객체 해제)
 void freeVM();
 
+// 소스 코드를 컴파일하고 실행
 InterpretResult interpret(const char* source);
+
+// VM 스택에 값 푸시
 void push(Value value);
+
+// VM 스택에서 값 팝
 Value pop();
 
 #endif //CLOX_VM_H

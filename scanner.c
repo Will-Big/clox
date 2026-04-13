@@ -37,7 +37,7 @@ static bool isAtEnd()
     return *scanner.current == '\0';
 }
 
-// move scanner to next token
+// 스캐너를 다음 문자로 이동
 static char advance()
 {
     scanner.current++;
@@ -104,7 +104,7 @@ static void skipWhitespace()
                 advance();
                 break;
             case '/':
-                if (peekNext() == '/') // A comment goes until the end of the line.
+                if (peekNext() == '/') // 주석은 줄 끝까지 건너뜀
                     while (peek() != '\n' && !isAtEnd()) advance();
                 else
                     return;
@@ -180,10 +180,10 @@ static Token number()
     while (isDigit(peek()))
         advance();
 
-    // Look for a fractional part.
+    // 소수점 이하 부분 확인
     if (peek() == '.' && isDigit(peekNext()))
     {
-        // Consume the ".".
+        // "." 소비
         advance();
 
         while (isDigit(peek()))
@@ -205,7 +205,7 @@ static Token string()
     if (isAtEnd())
         return errorToken("Unterminated string.");
 
-    // The closing quote.
+    // 닫는 따옴표 소비
     advance();
     return makeToken(TOKEN_STRING);
 }

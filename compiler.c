@@ -10,7 +10,7 @@
 #include "debug.h"
 #endif
 
-// Pratt Parser, defines operator precedence
+// Pratt 파서의 연산자 우선순위 정의
 typedef enum
 {
     PREC_NONE,
@@ -56,7 +56,7 @@ static Chunk* currentChunk()
     return compilingChunk;
 }
 
-// if error, turn to panic mode to prevent extra error
+// 에러 발생 시 패닉 모드 진입 (연쇄 에러 방지)
 static void errorAt(Token* token, const char* message)
 {
     if (parser.panicMode)
@@ -71,7 +71,7 @@ static void errorAt(Token* token, const char* message)
     }
     else if (token->type == TOKEN_ERROR)
     {
-        // Nothing.
+        // 에러 토큰은 별도 처리 없음
     }
     else
     {
@@ -92,7 +92,7 @@ static void errorAtCurrent(const char* message)
     errorAt(&parser.current, message);
 }
 
-// move parser to next chunk
+// 파서를 다음 토큰으로 이동
 static void advance()
 {
     parser.previous = parser.current;
@@ -107,7 +107,7 @@ static void advance()
     }
 }
 
-// check next token, TokenType should be same as type
+// 다음 토큰이 기대한 타입인지 확인, 아니면 에러
 static void consume(TokenType type, const char* message)
 {
     if (parser.current.type == type) {
@@ -118,7 +118,7 @@ static void consume(TokenType type, const char* message)
     errorAtCurrent(message);
 }
 
-// write one command in a chunk
+// 청크에 바이트코드 1바이트 기록
 static void emitByte(uint8_t byte)
 {
     writeChunk(currentChunk(), byte, parser.previous.line);
@@ -130,13 +130,13 @@ static void emitBytes(uint8_t byte1, uint8_t byte2)
     emitByte(byte2);
 }
 
-// write OP_RETURN command
+// OP_RETURN 명령어 기록
 static void emitReturn()
 {
     emitByte(OP_RETURN);
 }
 
-// store the value in the constant table and get the index
+// 상수 풀에 값 저장 후 인덱스 반환
 static uint8_t makeConstant(Value value)
 {
     int constant = addConstant(currentChunk(), value);
@@ -148,7 +148,7 @@ static uint8_t makeConstant(Value value)
     return (uint8_t)constant;
 }
 
-// store the value and write the command and value index in the chunk
+// OP_CONSTANT 명령어 + 상수 인덱스를 청크에 기록
 static void emitConstant(Value value)
 {
     emitBytes(OP_CONSTANT, makeConstant(value));
@@ -164,11 +164,11 @@ static void endCompiler()
 #endif
 }
 
-// handles operator precedence
+// 주어진 우선순위 이상의 표현식을 파싱
 static void parsePrecedence(Precedence precedence)
 {
     advance();
-    ParseFn prefixRule = getRule(parser.previous.type)->prefix; // get prefix func
+    ParseFn prefixRule = getRule(parser.previous.type)->prefix; // 전위 파싱 함수 가져오기
 
     if (prefixRule == NULL)
     {
@@ -181,12 +181,12 @@ static void parsePrecedence(Precedence precedence)
     while (precedence <= getRule(parser.current.type)->precedence)
     {
         advance();
-        ParseFn infixRule = getRule(parser.previous.type)->infix; // get infix func
+        ParseFn infixRule = getRule(parser.previous.type)->infix; // 중위 파싱 함수 가져오기
         infixRule();
     }
 }
 
-// infix
+// 중위 연산자 파싱 (이항 연산: +, -, *, / 등)
 static void binary()
 {
     TokenType operatorType = parser.previous.type;
@@ -205,18 +205,18 @@ static void binary()
         case TOKEN_MINUS:         emitByte(OP_SUBTRACT); break;
         case TOKEN_STAR:          emitByte(OP_MULTIPLY); break;
         case TOKEN_SLASH:         emitByte(OP_DIVIDE); break;
-        default: return; // Unreachable.
+        default: return; // 도달 불가
     }
 }
 
-// prefix
+// 리터럴 파싱 (true, false, nil)
 static void literal()
 {
     switch (parser.previous.type) {
         case TOKEN_FALSE: emitByte(OP_FALSE); break;
         case TOKEN_NIL: emitByte(OP_NIL); break;
         case TOKEN_TRUE: emitByte(OP_TRUE); break;
-        default: return; // Unreachable.
+        default: return; // 도달 불가
     }
 }
 
@@ -225,41 +225,40 @@ static void expression()
     parsePrecedence(PREC_ASSIGNMENT);
 }
 
-// prefix
+// 괄호 그룹 파싱
 static void grouping()
 {
     expression();
     consume(TOKEN_RIGHT_PAREN, "Expect ')' after expression.");
 }
 
-// prefix
+// 숫자 리터럴 파싱
 static void number()
 {
     double value = strtod(parser.previous.start, NULL);
     emitConstant(NUMBER_VAL(value));
 }
 
-// prefix
-static void string()
+// 문자열 리터럴 파싱
 {
     // +1 and -2 to trim the surrounding quote characters
     emitConstant(OBJ_VAL(copyString(parser.previous.start + 1,
                                     parser.previous.length - 2)));
 }
 
-// prefix
+// 단항 연산자 파싱 (-, !)
 static void unary()
 {
     TokenType operatorType = parser.previous.type;
 
-    // Compile the operand.
+    // 피연산자 컴파일
     parsePrecedence(PREC_UNARY);
 
-    // Emit the operator instruction.
+    // 연산자 명령어 기록
     switch (operatorType)
     {
         case TOKEN_MINUS: emitByte(OP_NEGATE); break;
-        default: return; // Unreachable.
+        default: return; // 도달 불가
     }
 }
 
